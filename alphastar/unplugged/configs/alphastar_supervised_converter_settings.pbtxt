@@ -1,0 +1,42 @@
+raw_settings {
+  resolution {
+    x: 256
+    y: 256
+  }
+  max_unit_count: 512
+  num_unit_features: 46
+  max_unit_selection_size: 64
+  shuffle_unit_tags: 1
+  enable_action_repeat: true
+  use_camera_position: true
+  camera: true
+  use_virtual_camera: true
+  virtual_camera_dimensions {
+    left: 16.0
+    right: 16.0
+    top: 13.0
+    bottom: 7.0
+  }
+  add_effects_to_units: true
+  add_cargo_to_units: true
+  mask_offscreen_enemies: true
+}
+minimap {
+  x: 128
+  y: 128
+}
+minimap_features: "height_map"
+minimap_features: "visibility_map"
+minimap_features: "creep"
+minimap_features: "player_relative"
+minimap_features: "alerts"
+minimap_features: "pathable"
+minimap_features: "buildable"
+num_action_types: 556
+num_unit_types: 243
+num_upgrade_types: 90
+max_num_upgrades: 40
+camera_width_world_units: 24
+mmr: 6000
+supervised: true
+crop_to_playable_area: false

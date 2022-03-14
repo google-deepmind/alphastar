@@ -1,0 +1,25 @@
+# proto-file: testing/leakr/proto/leakr.proto
+# proto-message: testing_leakr.FileTypeRecipe
+
+name: "alphastar filetype recipes"
+desc: "Configuration for leakr checks in copy.bara.sky"
+
+# .tfrecord files can randomly match forbidden strings. Exclude.
+file_config: {
+  name: "tfrecord"
+  desc: ".tfrecord files may match a forbidden word by coincidence."
+  ext: "tfrecord"
+  scan_mode: SCAN_SKIP
+  file_group: FG_DEFAULT
+}
+
+# The workspace file is intending for open-sourcing, so shouldn't contain
+# any internal references. It can contain words on the ban list, e.g. absl
+# uses a third_party subdirectory.
+file_config: {
+  name: "WORKSPACE",
+  desc: "The WORKSPACE contains 'third_party', at least."
+  pattern: "WORKSPACE"
+  scan_mode: SCAN_SKIP
+  file_group: FG_DEFAULT
+}

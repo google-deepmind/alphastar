@@ -1,0 +1,17 @@
+apache-beam
+dm-acme[jax,tf]
+dm-haiku
+dm-pix
+dm-reverb
+jax>=0.2.26
+jaxlib
+ml-collections
+mpyq
+numpy
+optax
+pandas
+pygame
+sk-video
+tensorflow
+tensorflow-datasets
+websocket-client
