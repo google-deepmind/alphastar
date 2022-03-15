@@ -27,7 +27,6 @@ pytype_strict_library(
     srcs = ["encoders.py"],
     visibility = [
         "//visibility:public",
-        "//alphastar/architectures/standard:__pkg__",
     ],
     deps = [
         "//alphastar/architectures:modular",
@@ -49,7 +48,6 @@ pytype_strict_library(
     srcs = ["heads.py"],
     visibility = [
         "//visibility:public",
-        "//alphastar/architectures/standard:__pkg__",
     ],
     deps = [
         "//alphastar/architectures:modular",
@@ -101,7 +99,6 @@ pytype_strict_library(
     srcs = ["torso.py"],
     visibility = [
         "//visibility:public",
-        "//alphastar/architectures/standard:__pkg__",
     ],
     deps = [
         "//alphastar/architectures:modular",

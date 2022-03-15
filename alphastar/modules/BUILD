@@ -10,10 +10,7 @@ pytype_strict_library(
     name = "types",
     srcs = ["types.py"],
     srcs_version = "PY3",
-    deps = [
-        requirement("dm-acme"),
-        requirement("dm-acme"),
-    ],
+    deps = [requirement("dm-acme")],
 )
 
 pytype_strict_library(

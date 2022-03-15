@@ -35,8 +35,6 @@ pytype_strict_library(
     srcs = ["util.py"],
     visibility = [
         "//visibility:public",
-        "//alphastar/architectures/dummy:__pkg__",
-        "//alphastar/architectures/standard:__pkg__",
     ],
     deps = ["//alphastar/types:__init__"],
 )

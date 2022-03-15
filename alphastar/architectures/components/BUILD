@@ -1,3 +1,4 @@
+load("@my_deps//:requirements.bzl", "requirement")
 load("//alphastar:pytype.bzl", "pytype_strict_library")
 load("//alphastar:strict.bzl", "py_strict_test")
 
@@ -12,12 +13,13 @@ py_strict_test(
     deps = [
         ":common",
         ":test_utils",
-        "@absl_py//absl/testing:absltest",
-        "@absl_py//absl/testing:parameterized",
         "//alphastar/architectures:util",
         "//alphastar/commons:sample",
         "//alphastar/types:__init__",
-        requirement("jax"), requirement("jaxlib"),
+        "@absl_py//absl/testing:absltest",
+        "@absl_py//absl/testing:parameterized",
+        requirement("jax"),
+        requirement("jaxlib"),
     ],
 )
 
@@ -29,11 +31,12 @@ py_strict_test(
         ":merge",
         ":test_utils",
         ":units",
-        "@absl_py//absl/testing:absltest",
-        "@absl_py//absl/testing:parameterized",
         "//alphastar/architectures:modular",
         "//alphastar/types:__init__",
-        requirement("jax"), requirement("jaxlib"),
+        "@absl_py//absl/testing:absltest",
+        "@absl_py//absl/testing:parameterized",
+        requirement("jax"),
+        requirement("jaxlib"),
     ],
 )
 
@@ -48,14 +51,15 @@ py_strict_test(
         ":test_utils",
         ":units",
         ":util",
-        "@absl_py//absl/testing:absltest",
-        "@absl_py//absl/testing:parameterized",
         "//alphastar/architectures:modular",
         "//alphastar/architectures/components/static_data:unit_encoder_data",
         "//alphastar/commons:sample",
         "//alphastar/types:__init__",
+        "@absl_py//absl/testing:absltest",
+        "@absl_py//absl/testing:parameterized",
         "@dm_env_archive//:specs",
-        requirement("jax"), requirement("jaxlib"),
+        requirement("jax"),
+        requirement("jaxlib"),
         requirement("numpy"),
     ],
 )
@@ -67,11 +71,12 @@ py_strict_test(
     deps = [
         ":test_utils",
         ":vector",
+        "//alphastar/types:__init__",
         "@absl_py//absl/testing:absltest",
         "@absl_py//absl/testing:parameterized",
-        "//alphastar/types:__init__",
         requirement("chex"),
-        requirement("jax"), requirement("jaxlib"),
+        requirement("jax"),
+        requirement("jaxlib"),
     ],
 )
 
@@ -82,11 +87,12 @@ py_strict_test(
     deps = [
         ":test_utils",
         ":visual",
+        "//alphastar/architectures:util",
         "@absl_py//absl/testing:absltest",
         "@absl_py//absl/testing:parameterized",
-        "//alphastar/architectures:util",
         requirement("chex"),
-        requirement("jax"), requirement("jaxlib"),
+        requirement("jax"),
+        requirement("jaxlib"),
     ],
 )
 
@@ -96,9 +102,6 @@ pytype_strict_library(
     srcs_version = "PY3",
     visibility = [
         "//visibility:public",
-        "//alphastar/architectures/agents/dummy:__pkg__",
-        "//alphastar/architectures/agents/standard:__pkg__",
-        "//alphastar/architectures/components:__pkg__",
     ],
     deps = [
         ":util",
@@ -107,7 +110,8 @@ pytype_strict_library(
         "//alphastar/types:__init__",
         "@dm_env_archive//:dm_env",
         "@dm_env_archive//:specs",
-        requirement("jax"), requirement("jaxlib"),
+        requirement("jax"),
+        requirement("jaxlib"),
     ],
 )
 
@@ -116,8 +120,6 @@ pytype_strict_library(
     srcs = ["merge.py"],
     visibility = [
         "//visibility:public",
-        "//alphastar/architectures:__pkg__",
-        "//alphastar/architectures/agents/standard:__pkg__",
     ],
     deps = [
         ":util",
@@ -125,7 +127,8 @@ pytype_strict_library(
         "//alphastar/types:__init__",
         "@dm_env_archive//:specs",
         requirement("dm-haiku"),
-        requirement("jax"), requirement("jaxlib"),
+        requirement("jax"),
+        requirement("jaxlib"),
     ],
 )
 
@@ -134,8 +137,6 @@ pytype_strict_library(
     srcs = ["test_utils.py"],
     visibility = [
         "//visibility:public",
-        "//alphastar/architectures/agents/standard:__pkg__",
-        "//alphastar/architectures/components:__pkg__",
     ],
     deps = [
         "//alphastar/architectures:modular",
@@ -143,7 +144,8 @@ pytype_strict_library(
         "//alphastar/unplugged/data:util",
         "@dm_env_archive//:specs",
         requirement("dm-haiku"),
-        requirement("jax"), requirement("jaxlib"),
+        requirement("jax"),
+        requirement("jaxlib"),
     ],
 )
 
@@ -152,12 +154,10 @@ pytype_strict_library(
     srcs = [
         "units.py",
     ],
+    data = ["@pysc2_archive//pysc2/env/converter/cc/game_data/python:uint8_lookup.so"],
     srcs_version = "PY3",
     visibility = [
         "//visibility:public",
-        "//alphastar/architectures/agents/dummy:__pkg__",
-        "//alphastar/architectures/agents/standard:__pkg__",
-        "//alphastar/architectures/components:__pkg__",
     ],
     deps = [
         ":util",
@@ -169,12 +169,12 @@ pytype_strict_library(
         requirement("chex"),
         "@dm_env_archive//:specs",
         requirement("dm-haiku"),
-        requirement("jax"), requirement("jaxlib"),
+        requirement("jax"),
+        requirement("jaxlib"),
         requirement("numpy"),
-        "@pysc2_archive//pysc2/env/converter/cc/game_data/python:__init__",
-        "@pysc2_archive//pysc2/env/converter/cc/game_data/python:uint8_lookup",
-        "@pysc2_archive//pysc2/lib:features",
         "@s2client_proto//s2clientprotocol:raw_py_pb2",
+        "@pysc2_archive//pysc2/env/converter/cc/game_data/python:__init__",
+        "@pysc2_archive//pysc2/lib:features",
     ],
 )
 
@@ -184,13 +184,13 @@ pytype_strict_library(
     srcs_version = "PY3",
     visibility = [
         "//visibility:public",
-        "//alphastar/architectures/components:__pkg__",
     ],
     deps = [
         "//alphastar/types:__init__",
         requirement("chex"),
         requirement("dm-haiku"),
-        requirement("jax"), requirement("jaxlib"),
+        requirement("jax"),
+        requirement("jaxlib"),
         requirement("numpy"),
         "@pysc2_archive//pysc2/lib:actions",
     ],
@@ -208,9 +208,6 @@ pytype_strict_library(
     srcs_version = "PY3",
     visibility = [
         "//visibility:public",
-        "//alphastar/architectures/agents/dummy:__pkg__",
-        "//alphastar/architectures/agents/standard:__pkg__",
-        "//alphastar/architectures/components:__pkg__",
     ],
     deps = [
         ":util",
@@ -219,7 +216,8 @@ pytype_strict_library(
         requirement("chex"),
         "@dm_env_archive//:specs",
         requirement("dm-haiku"),
-        requirement("jax"), requirement("jaxlib"),
+        requirement("jax"),
+        requirement("jaxlib"),
         requirement("numpy"),
     ],
 )
@@ -229,8 +227,6 @@ pytype_strict_library(
     srcs = ["visual.py"],
     visibility = [
         "//visibility:public",
-        "//alphastar/architectures/agents/standard:__pkg__",
-        "//alphastar/architectures/components:__pkg__",
     ],
     deps = [
         ":util",
@@ -242,7 +238,8 @@ pytype_strict_library(
         "@dm_env_archive//:specs",
         requirement("dm-pix"),
         requirement("dm-haiku"),
-        requirement("jax"), requirement("jaxlib"),
+        requirement("jax"),
+        requirement("jaxlib"),
         requirement("numpy"),
     ],
 )

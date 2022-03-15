@@ -3,6 +3,7 @@ dm-acme[jax,tf]
 dm-haiku
 dm-pix
 dm-reverb
+frozendict
 jax>=0.2.26
 jaxlib
 ml-collections
