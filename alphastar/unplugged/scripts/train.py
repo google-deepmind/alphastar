@@ -72,8 +72,8 @@ _CONFIG = config_flags.DEFINE_config_file(
 def main(_):
   config = _CONFIG.value
   num_devices = 1  # Number of devices over which training is run.
-  frames_per_step = int(config.train.batch_size *
-                        config.train.unroll_len) * num_devices
+  frames_per_step = int(config.train.learner_kwargs.batch_size *
+                        config.train.learner_kwargs.unroll_len) * num_devices
   architecture = architectures.get_architecture(config.architecture.name)
   architecture = functools.partial(architecture,
                                    **config.architecture.kwargs)
@@ -89,9 +89,9 @@ def main(_):
   data_source_kwargs = dict(
       data_split=data_source_base.DataSplit.DEBUG,
       converter_settings=config.converter_settings.train,
-      batch_size=config.train.batch_size,
-      unroll_len=config.train.unroll_len,
-      overlap_len=config.train.overlap_len,
+      batch_size=config.train.learner_kwargs.batch_size,
+      unroll_len=config.train.learner_kwargs.unroll_len,
+      overlap_len=config.train.learner_kwargs.overlap_len,
       **config.train.datasource.kwargs)
 
   train_data_source = getattr(data_source, config.train.datasource.name)(
@@ -99,8 +99,8 @@ def main(_):
 
   logger = acme_common.make_default_logger(
       'learner',
-      log_to_csv=config.train.log_to_csv,
-      time_delta=config.train.log_every_n_seconds,
+      log_to_csv=config.train.learner_kwargs.log_to_csv,
+      time_delta=config.train.learner_kwargs.log_every_n_seconds,
       asynchronous=True,
       serialize_fn=utils.fetch_devicearray)
 
@@ -114,7 +114,7 @@ def main(_):
       rng_key=jax.random.PRNGKey(22),
       frames_per_step=frames_per_step,
       increment_counts=False,
-      **config.train)
+      **config.train.learner_kwargs)
 
   checkpointed_learner_node = acme_common.FramesLimitedCheckpointingRunner(
       max_number_of_frames=config.train.max_number_of_frames,
