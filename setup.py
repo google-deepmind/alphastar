@@ -35,9 +35,11 @@ setup(
     # This is important if you have some non-standard files as part of package.
     include_package_data=True,
     packages=find_packages(),
+    # dm-acme 0.2.4 until the clash of pybind11 absl status bindings with
+    # PySC2 is resolved.
     install_requires=[
         'apache-beam[gcp]',
-        'dm-acme[jax,tf]',
+        'dm-acme[jax,tf]==0.2.4',
         's2clientprotocol',
         'pysc2',
         'ml-collections',
