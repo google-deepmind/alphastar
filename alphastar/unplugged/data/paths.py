@@ -19,6 +19,18 @@ from typing import Optional
 
 ALL_REPLAY_VERSIONS = ('4.8.2', '4.8.3', '4.8.4', '4.8.6', '4.9.0', '4.9.1',
                        '4.9.2')
+
+# Please check `get_dataset_pattern()` to see how the paths are used.
+
+# An example if the data generation wrote to /tmp/data/<PATH >
+# would be DEFAULT_BASE_PATH = '/tmp/data' and DATASET_PATHS would be a dict
+# {(replay_versions, data_split, player_min_mmr): <PATH>}. An example key
+# could look like this : ('4.9.2',), 'train', 3500).
+
+# While training, the particular data that you want can be set by setting the
+# replay_versions, data_split and player_min_mmr via the config
+# `config.train.datasource.kwargs`
+
 DEFAULT_BASE_PATH = ''
 
 DATASET_PATHS = {

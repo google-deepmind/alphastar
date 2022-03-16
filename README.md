@@ -43,9 +43,9 @@ pip install --upgrade pip setuptools wheel
 ## Quickstart
 
 For quickstart instructions on how to run training and evaluation scripts in
-*fully offline* settings, please refer to the README in `alphastar/unplugged/`.
-In this repository, we have not provided any online RL training code but for the
-architectures only.
+*fully offline* settings, please refer to [this README](https://github.com/deepmind/alphastar/blob/master/alphastar/unplugged/README.md).
+In this repository, we have not provided any online RL training code. But, the
+architectures are fit to be used in both online and offline training.
 
 ## About
 
