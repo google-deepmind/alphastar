@@ -18,11 +18,9 @@
 # pylint: disable=logging-fstring-interpolation
 import concurrent
 import contextlib
-import re
 import sys
-import time
 import traceback
-from typing import Any, Dict, Iterator, Mapping, Optional, Sequence, Tuple, Union
+from typing import Any, Dict, Iterator, Optional, Sequence, Tuple, Union
 
 from absl import logging
 import acme
@@ -51,7 +49,6 @@ from pysc2.env.converter import derive_interface_options
 from pysc2.env.converter.proto import converter_pb2
 from pysc2.maps import ladder as sc2_ladder
 from pysc2.maps import lib as sc2_map_lib
-import tensorflow as tf
 
 # Needed to load learner checkpoints:
 
@@ -82,84 +79,6 @@ if 'Automaton_v2' not in sc2_map_lib.get_maps():
 
 def _tree_has_nan(x):
   return any(jax.tree_leaves(jax.tree_map(lambda y: np.isnan(np.sum(y)), x)))
-
-
-def _get_ckpt_index(ckpt_path_str: str) -> int:
-  if ckpt_path_str is None:
-    return 0
-  else:
-    # checkpoints are of the form {dir}/ckpt-{index}
-    return int(ckpt_path_str.split('/')[-1].split('-')[-1])
-
-
-def _get_checkpoint_generator(
-    checkpoint_dir: str,) -> Iterator[Tuple[Mapping[str, Any], int]]:
-  """Generator that returns the latest checkpoint, blocks if there are none."""
-  # ACME uses TF Checkpoint Manager and hence we need to use the same here to
-  # obtain checkpoints and do the necessary indexing.
-  directory, subdirectory = re.split(r'/checkpoints/', checkpoint_dir)
-  logging.log_first_n(
-      logging.INFO, f'Searching for checkpoints in directory : {directory} '
-      f'and subdirectory: {subdirectory}', 1)
-  latest_checkpoint = tf.train.latest_checkpoint(checkpoint_dir)
-  last_index = _get_ckpt_index(latest_checkpoint)
-
-  while last_index == 0:
-    logging.info('Waiting for a checkpoint in %s', checkpoint_dir)
-    time.sleep(10)
-    latest_checkpoint = tf.train.latest_checkpoint(checkpoint_dir)
-    last_index = _get_ckpt_index(latest_checkpoint)
-
-  cached_index, cached_state = 0, None
-  num_ckpt_restore_attempts = 0
-
-  saveable_learner = acme_common.MockSaveableLearner()
-  while True:
-    if num_ckpt_restore_attempts > 10:
-      raise RuntimeError('Tried restoring checkpoint 10 times. Failing.')
-    latest_checkpoint = tf.train.latest_checkpoint(checkpoint_dir)
-    last_index = _get_ckpt_index(latest_checkpoint)
-    if last_index > cached_index:
-      logging.info(f'Found new checkpoint {last_index} in '
-                   f'{checkpoint_dir}, reloading')
-      # pylint: disable=broad-except
-      try:
-        acme_common.restore_from_checkpoint(saveable_learner, latest_checkpoint)
-        logging.info(f'Restored checkpoint {latest_checkpoint} successfully.')
-        # pylint: disable=protected-access
-        cached_state = saveable_learner._state
-        # pylint: enable=protected-access
-        cached_index = last_index
-        num_ckpt_restore_attempts = 0
-      except Exception as e:
-        num_ckpt_restore_attempts += 1
-        logging.warning(f'Caught exception while loading checkpoint : {e}. '
-                        'Sleeping for 10 seconds and retrying.')
-        time.sleep(10)
-    else:
-      time.sleep(10)
-    if cached_state is None:
-      raise RuntimeError(f'State from {latest_checkpoint} cannot be None.')
-    yield cached_state, cached_index
-
-
-def _get_checkpoint_generator_for_path(
-    checkpoint_path: str,) -> Iterator[Tuple[Mapping[str, Any], int]]:
-  """Given a full checkpoint path, generates cached state and index."""
-  saveable_learner = acme_common.MockSaveableLearner()
-  cached_state = None
-  # ACME Checkpoint is of the form dir/subdir/ckpt-<index>
-  _, cached_index = re.split(r'/ckpt-', checkpoint_path)
-
-  while True:
-    if cached_state is None:
-      acme_common.restore_from_checkpoint(saveable_learner, checkpoint_path)
-      logging.info(f'Restored checkpoint {checkpoint_path} successfully.')
-      # pylint: disable=protected-access
-      cached_state = saveable_learner._state
-      if cached_state is None:
-        raise RuntimeError(f'State from {checkpoint_path} cannot be None.')
-    yield cached_state, int(cached_index)
 
 
 class StepEvaluationMixin(object):
@@ -495,16 +414,16 @@ class EvalActor(acme.Worker):
     if self.evaluator_type == EvaluatorType.RANDOM_PARAMS:
       return None
     elif self._eval_checkpoint_path:
-      return _get_checkpoint_generator_for_path(self._eval_checkpoint_path)
+      return acme_common.get_checkpoint_generator_for_path(
+          self._eval_checkpoint_path)
     else:
       eval_checkpoint_dir = self._eval_checkpoint_dir
       if not eval_checkpoint_dir and self._checkpointed_learner:
         eval_checkpoint_dir = self._checkpointed_learner.get_directory()
         if eval_checkpoint_dir is None:
           raise ValueError('Checkpoint directory cannot be ''None')
-      logging.info(
-          f'Eval Checkpoint directory is set as {eval_checkpoint_dir}')
-      return _get_checkpoint_generator(eval_checkpoint_dir)
+      logging.info(f'Eval Checkpoint directory is set as {eval_checkpoint_dir}')
+      return acme_common.get_checkpoint_generator(eval_checkpoint_dir)
 
   def setup_agent(self):
     agent_architecture = self.get_agent_architecture()
@@ -549,6 +468,7 @@ class EvalActor(acme.Worker):
 
 def _traceback_exception():
   return traceback.print_exception(*sys.exc_info())
+
 
 class ThreadedUnbatchedEvalActor(acme.Worker):
   """Multiple actor threads on a CPU with unbatched evaluation."""

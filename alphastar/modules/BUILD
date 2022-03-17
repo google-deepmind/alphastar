@@ -59,6 +59,25 @@ pytype_strict_library(
     ],
 )
 
+py_strict_test(
+    name = "common_test",
+    srcs = ["common_test.py"],
+    deps = [
+        ":common",
+        ":optimizers",
+        requirement("dm-acme"),
+        "//alphastar/architectures",
+        "//alphastar/unplugged/configs",
+        "//alphastar/unplugged/data:data_source",
+        "//alphastar/unplugged/losses:__init__",
+        "//alphastar/unplugged/modules:learner",
+        requirement("chex"),
+        requirement("jax"),
+        requirement("jaxlib"),
+        "@absl_py//absl/testing:absltest",
+    ],
+)
+
 pytype_strict_library(
     name = "evaluator_base",
     srcs = ["evaluator_base.py"],
@@ -183,7 +202,6 @@ pytype_strict_library(
         requirement("jax"),
         requirement("jaxlib"),
         requirement("numpy"),
-        requirement("tensorflow"),
         "@absl_py//absl/logging",
         "@pysc2_archive//pysc2/env:converted_env",
         "@pysc2_archive//pysc2/env:sc2_env",

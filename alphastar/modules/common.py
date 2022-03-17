@@ -14,8 +14,12 @@
 
 """Common modules used in training and evaluation."""
 
+# pylint: disable=logging-fstring-interpolation
+import re
 import threading
-from typing import Any, Callable, List, Mapping, Optional, Sequence
+import time
+from typing import Any, Callable, Iterator, List, Mapping, Optional, Sequence
+from typing import Tuple
 
 from absl import logging
 from acme import core
@@ -193,6 +197,80 @@ def restore_from_checkpoint(wrapped: core.Saveable,
       wrapped_object_state = wrapped_object_state._replace(**modified_fields)
       wrapped.restore(wrapped_object_state)
   return wrapped
+
+
+def _get_ckpt_index(ckpt_path_str: str) -> int:
+  if ckpt_path_str is None:
+    return 0
+  else:
+    # checkpoints are of the form {dir}/ckpt-{index}
+    return int(ckpt_path_str.split('/')[-1].split('-')[-1])
+
+
+def get_checkpoint_generator(
+    checkpoint_dir: str,) -> Iterator[Tuple[Any, int]]:
+  """Generator that returns the latest checkpoint, blocks if there are none."""
+  # ACME uses TF Checkpoint Manager and hence we need to use the same here to
+  # obtain checkpoints and do the necessary indexing.
+  directory, subdirectory = re.split(r'/checkpoints/', checkpoint_dir)
+  logging.log_first_n(
+      logging.INFO, f'Searching for checkpoints in directory : {directory} '
+      f'and subdirectory: {subdirectory}', 1)
+  latest_checkpoint = tf.train.latest_checkpoint(checkpoint_dir)
+  last_index = _get_ckpt_index(latest_checkpoint)
+
+  while last_index == 0:
+    logging.info('Waiting for a checkpoint in %s', checkpoint_dir)
+    time.sleep(10)
+    latest_checkpoint = tf.train.latest_checkpoint(checkpoint_dir)
+    last_index = _get_ckpt_index(latest_checkpoint)
+
+  cached_index, cached_state = 0, None
+  num_ckpt_restore_attempts = 0
+
+  saveable_learner = MockSaveableLearner()
+  while True:
+    if num_ckpt_restore_attempts > 10:
+      raise RuntimeError('Tried restoring checkpoint 10 times. Failing.')
+    latest_checkpoint = tf.train.latest_checkpoint(checkpoint_dir)
+    last_index = _get_ckpt_index(latest_checkpoint)
+    if last_index > cached_index:
+      logging.info(f'Found new checkpoint {last_index} in '
+                   f'{checkpoint_dir}, reloading')
+      try:
+        restore_from_checkpoint(saveable_learner, latest_checkpoint)
+        logging.info(f'Restored checkpoint {latest_checkpoint} successfully.')
+        cached_state = saveable_learner._state  # pylint: disable=protected-access
+        cached_index = last_index
+        num_ckpt_restore_attempts = 0
+      except Exception as e:  # pylint: disable=broad-except
+        num_ckpt_restore_attempts += 1
+        logging.warning(f'Caught exception while loading checkpoint : {e}. '
+                        'Sleeping for 10 seconds and retrying.')
+        time.sleep(10)
+    else:
+      time.sleep(10)
+    if cached_state is None:
+      raise RuntimeError(f'State from {latest_checkpoint} cannot be None.')
+    yield cached_state, cached_index
+
+
+def get_checkpoint_generator_for_path(
+    checkpoint_path: str,) -> Iterator[Tuple[Any, int]]:
+  """Given a full checkpoint path, generates cached state and index."""
+  saveable_learner = MockSaveableLearner()
+  cached_state = None
+  # ACME Checkpoint is of the form dir/subdir/ckpt-<index>
+  _, cached_index = re.split(r'/ckpt-', checkpoint_path)
+
+  while True:
+    if cached_state is None:
+      restore_from_checkpoint(saveable_learner, checkpoint_path)
+      logging.info(f'Restored checkpoint {checkpoint_path} successfully.')
+      cached_state = saveable_learner._state  # pylint: disable=protected-access
+      if cached_state is None:
+        raise RuntimeError(f'State from {checkpoint_path} cannot be None.')
+    yield cached_state, int(cached_index)
 
 
 def flatten_metrics(metrics_nest):
