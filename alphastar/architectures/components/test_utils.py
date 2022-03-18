@@ -86,7 +86,8 @@ def get_test_specs(is_training: bool
         (), jnp.int32, minimum=0, maximum=1_000_000_000)
   return input_spec, action_spec
 
-@jtu.with_config(jax_numpy_rank_promotion="allow")
+
+@jtu.with_config(jax_numpy_rank_promotion='allow')
 class ComponentTest(jtu.JaxTestCase):
   """Basic class to test component input/output consistency."""
 
