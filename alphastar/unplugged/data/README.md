@@ -12,35 +12,18 @@ the
 [PySC2 converter](https://github.com/deepmind/pysc2/pysc2/env/converter/converter.py).
 [generate_dataset.py](generate_dataset.py), in
 conjunction with [generate_partitions.py](generate_partitions.py), can be
-used to create that. First, however, the raw replays must be downloaded. To do
-so, first download the replayset files for
-[train](https://storage.cloud.google.com/dm-starcraft-offline-datasets/offline-train.csv)
-and
-[test](https://storage.cloud.google.com/dm-starcraft-offline-datasets/offline-test.csv).
-Then, for as many of the versions used by these datasets as you want to
-support (from 4.8.2, 4.8.3, 4.8.4, 4.8.6, 4.9.0, 4.9.1, 4.9.2), run the
-following command:
+used to create that. First, however, the raw replays must be downloaded. For
+convenience we provide a shell script for this:
 
+```shell
+alphastar/unplugged/data/get_replays.sh
 ```
-python3 download_replays.py \
-  --key=<key>  \
-  --secret=<secret>  \
-  --version=<version>  \
-  --replays_dir=./replays/test  \
-  --download_dir=./downloads/test  \
-  --filter_version=delete --replayset_csv=./offline-test.csv
-```
-
-Repeat the same process to download the train replayset (
-replacing 'test' with 'train' in the command above. See the
-[replays API documentation](https://github.com/Blizzard/s2client-proto/tree/master/samples/replay-api)
-for information about obtaining the key and secret).
 
 Once the replays are downloaded they can be transformed from .SC2Replay files
 to converted .tfrecord files. As there is a large amount of data a simple means
 of parallelizing the computation is provided. First, run the following:
 
-```
+```shell
 python3 generate_partitions.py  \
   --sc2_replay_path=./replays/test/4.9.2  \
   --converted_path=./converted/test/4.9.2  \
@@ -51,7 +34,7 @@ python3 generate_partitions.py  \
 Then instantiate the following once for each partition, making sure to update
 --partition_file appropriately:
 
-```
+```shell
 python3 generate_dataset.py  \
   --sc2_replay_path=./replays/test/4.9.2  \
   --converted_path=./replays/converted/test/4.9.2  \
