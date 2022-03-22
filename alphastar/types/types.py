@@ -324,6 +324,15 @@ class SpecDict(NestedDict[specs.Array]):
           raise ValueError(
               f"{error_prefix}Error when validating spec {k}: {e}") from e
 
+  def copy(self) -> "SpecDict":
+    output = SpecDict()
+    for k, v in self.items():
+      output[k] = v
+    return output
+
+  def __copy__(self) -> "SpecDict":
+    return self.copy()
+
 
 def _flatten_func(s):
   d = s.asdict()
