@@ -22,7 +22,6 @@ from alphastar.architectures import util
 from alphastar.architectures.components import test_utils
 from alphastar.architectures.components import visual
 import chex
-from jax import test_util as jtu
 import jax.numpy as jnp
 
 
@@ -269,4 +268,4 @@ class VisualTest(test_utils.ComponentTest):
           component, batch_size=2, unroll_len=3 if is_training else 1)
 
 if __name__ == '__main__':
-  absltest.main(testLoader=jtu.JaxTestLoader())
+  absltest.main()

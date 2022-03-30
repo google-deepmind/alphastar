@@ -15,8 +15,10 @@
 """Tests for common."""
 
 import functools
+import os
 
 from absl.testing import absltest
+from acme.tf import savers as tf_savers
 from alphastar.architectures import architectures
 from alphastar.modules import common
 from alphastar.modules import optimizers
@@ -24,14 +26,11 @@ from alphastar.unplugged import losses
 from alphastar.unplugged.configs import alphastar_supervised as expt_config_module
 from alphastar.unplugged.data import data_source
 from alphastar.unplugged.modules import learner as supervised_learner
-import jax
-from acme.tf import savers as tf_savers
-from jax import test_util as jtu
 import chex
-import os
+import jax
 
 
-class CommonTest(jtu.JaxTestCase):
+class CommonTest(absltest.TestCase):
   """Simple tests for common.py."""
 
   def test_checkpoint(self):
@@ -107,4 +106,4 @@ class CommonTest(jtu.JaxTestCase):
     chex.assert_trees_all_close(state, learner.save())
 
 if __name__ == '__main__':
-  absltest.main(testLoader=jtu.JaxTestLoader())
+  absltest.main()

@@ -21,12 +21,11 @@ from alphastar.unplugged.losses import supervised
 import dm_env
 from dm_env import specs
 import jax
-from jax import test_util as jtu
 import jax.numpy as jnp
 import numpy as np
 
 
-class SupervisedTest(jtu.JaxTestCase):
+class SupervisedTest(absltest.TestCase):
 
   def test_supervised_loss(self):
     unroll_len = 50
@@ -103,8 +102,8 @@ class SupervisedTest(jtu.JaxTestCase):
             and step_type[i] != int(dm_env.StepType.LAST)
             and (burnin_len <= i < unroll_len - overlap_len)):
           total_xentropy += weight * xentropy
-      self.assertArraysAllClose(loss[i], total_xentropy)
+      np.testing.assert_allclose(loss[i], total_xentropy, rtol=1E-5)
 
 
 if __name__ == '__main__':
-  absltest.main(testLoader=jtu.JaxTestLoader())
+  absltest.main()

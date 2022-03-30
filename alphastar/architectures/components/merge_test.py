@@ -21,7 +21,6 @@ from absl.testing import parameterized
 from alphastar import types
 from alphastar.architectures.components import merge
 from alphastar.architectures.components import test_utils
-from jax import test_util as jtu
 import jax.numpy as jnp
 
 
@@ -105,4 +104,4 @@ class MergeTest(test_utils.ComponentTest):
 
 
 if __name__ == '__main__':
-  absltest.main(testLoader=jtu.JaxTestLoader())
+  absltest.main()

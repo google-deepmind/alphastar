@@ -19,7 +19,6 @@ from absl.testing import parameterized
 from alphastar.architectures.components import test_utils
 from alphastar.architectures.standard import standard
 from alphastar.architectures.standard.configs import lite as config_lite
-from jax import test_util as jtu
 
 
 class LiteTest(test_utils.ComponentTest):
@@ -47,4 +46,4 @@ class LiteTest(test_utils.ComponentTest):
 
 
 if __name__ == '__main__':
-  absltest.main(testLoader=jtu.JaxTestLoader())
+  absltest.main()

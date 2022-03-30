@@ -22,7 +22,6 @@ from alphastar import types
 from alphastar.architectures.components import test_utils
 from alphastar.architectures.components import vector
 import chex
-from jax import test_util as jtu
 import jax.numpy as jnp
 
 
@@ -186,4 +185,4 @@ class VectorTest(test_utils.ComponentTest):
 
 
 if __name__ == '__main__':
-  absltest.main(testLoader=jtu.JaxTestLoader())
+  absltest.main()

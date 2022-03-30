@@ -16,13 +16,13 @@
 
 from typing import Tuple
 
+from absl.testing import parameterized
 from alphastar import types
 from alphastar.architectures import modular
 from alphastar.unplugged.data import util as data_util
 from dm_env import specs
 import haiku as hk
 import jax
-from jax import test_util as jtu
 import jax.numpy as jnp
 
 
@@ -87,8 +87,7 @@ def get_test_specs(is_training: bool
   return input_spec, action_spec
 
 
-@jtu.with_config(jax_numpy_rank_promotion='allow')
-class ComponentTest(jtu.JaxTestCase):
+class ComponentTest(parameterized.TestCase):
   """Basic class to test component input/output consistency."""
 
   def _test_component(self,

@@ -28,7 +28,6 @@ from alphastar.architectures.components import util
 from alphastar.architectures.components.static_data import unit_encoder_data
 from alphastar.commons import sample
 from dm_env import specs
-from jax import test_util as jtu
 import jax.numpy as jnp
 import numpy as np
 
@@ -157,14 +156,14 @@ class UnitsTest(test_utils.ComponentTest):
         37: 1. / 100}
 
     embeddings = units._features_embedding(jnp.asarray(raw_unit), rescales)
-    self.assertArraysAllClose(embeddings, jnp.asarray([
+    np.testing.assert_allclose(embeddings, jnp.asarray([
         0.42, 6./255, 1., 0., 0.04, 0.78]))
 
   def test_binary_scale_embedding(self):
-    self.assertArraysEqual(
+    np.testing.assert_array_equal(
         units._binary_scale_embedding(jnp.asarray(42), 256),
         jnp.asarray([0, 1, 0, 1, 0, 1, 0, 0], jnp.float32))
-    self.assertArraysEqual(
+    np.testing.assert_array_equal(
         units._binary_scale_embedding(jnp.asarray(119), 128),
         jnp.asarray([1, 1, 1, 0, 1, 1, 1], jnp.float32))
 
@@ -180,7 +179,7 @@ class UnitsTest(test_utils.ComponentTest):
         jnp.asarray(id_1), order_id_lookup)
     one_hot_2 = units._remap_and_one_hot_embedding(
         jnp.asarray(id_2), order_id_lookup)
-    self.assertArraysEqual(one_hot_1, one_hot_2)
+    np.testing.assert_array_equal(one_hot_1, one_hot_2)
 
   @parameterized.product(
       is_training=[True, False],
@@ -430,4 +429,4 @@ class UnitsTest(test_utils.ComponentTest):
 
 
 if __name__ == '__main__':
-  absltest.main(testLoader=jtu.JaxTestLoader())
+  absltest.main()

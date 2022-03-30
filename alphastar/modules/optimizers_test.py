@@ -19,11 +19,10 @@ from absl.testing import parameterized
 from alphastar.modules import optimizers
 import chex
 import haiku as hk
-from jax import test_util as jtu
 import jax.numpy as jnp
 
 
-class OptimizersTest(jtu.JaxTestCase):
+class OptimizersTest(parameterized.TestCase):
   """Optimizer Tests."""
 
   def get_params(self):
@@ -83,4 +82,4 @@ class OptimizersTest(jtu.JaxTestCase):
 
 
 if __name__ == '__main__':
-  absltest.main(testLoader=jtu.JaxTestLoader())
+  absltest.main()

@@ -75,8 +75,6 @@ py_strict_test(
         "//alphastar/architectures/standard:configs",
         "@absl_py//absl/testing:absltest",
         "@absl_py//absl/testing:parameterized",
-        requirement("jax"),
-        requirement("jaxlib"),
     ],
 )
 

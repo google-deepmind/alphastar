@@ -21,7 +21,6 @@ from alphastar.architectures import util as modular_util
 from alphastar.architectures.components import common
 from alphastar.architectures.components import test_utils
 from alphastar.commons import sample
-from jax import test_util as jtu
 
 
 _ALL_ARGUMENT_NAMES = (
@@ -92,4 +91,4 @@ class CommonTest(test_utils.ComponentTest):
 
 
 if __name__ == '__main__':
-  absltest.main(testLoader=jtu.JaxTestLoader())
+  absltest.main()

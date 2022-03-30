@@ -20,11 +20,10 @@ from alphastar.architectures.dummy import dummy
 from dm_env import specs
 import haiku as hk
 import jax
-from jax import test_util as jtu
 import jax.numpy as jnp
 
 
-class DummyTest(jtu.JaxTestCase):
+class DummyTest(parameterized.TestCase):
   """Basic tests for the dummy architecture."""
 
   @parameterized.parameters(True, False)
@@ -77,4 +76,4 @@ class DummyTest(jtu.JaxTestCase):
 
 
 if __name__ == '__main__':
-  absltest.main(testLoader=jtu.JaxTestLoader())
+  absltest.main()

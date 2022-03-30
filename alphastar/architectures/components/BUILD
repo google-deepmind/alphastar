@@ -18,8 +18,6 @@ py_strict_test(
         "//alphastar/types:__init__",
         "@absl_py//absl/testing:absltest",
         "@absl_py//absl/testing:parameterized",
-        requirement("jax"),
-        requirement("jaxlib"),
     ],
 )
 
@@ -142,6 +140,7 @@ pytype_strict_library(
         "//alphastar/architectures:modular",
         "//alphastar/types:__init__",
         "//alphastar/unplugged/data:util",
+        "@absl_py//absl/testing:parameterized",
         "@dm_env_archive//:specs",
         requirement("dm-haiku"),
         requirement("jax"),
