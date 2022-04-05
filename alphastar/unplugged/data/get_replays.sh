@@ -154,7 +154,8 @@ function download_replays {
     --replays_dir="${replay_root_dir}/${version}/${train_or_test}"  \
     --download_dir="${DOWNLOADS_DIR}"  \
     --filter_version=delete \
-    --replayset_csv="${csv_path}"
+    --replayset_csv="${csv_path}" \
+    --extract
 }
 
 function main {
