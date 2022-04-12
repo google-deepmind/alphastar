@@ -136,8 +136,9 @@ function setup_python_env {
   source ${VENV_DIR}/bin/activate
 
   echo 'Installing dependencies'
-  # `six` should be included in `requirements.txt` but isn't.
-  python -m pip install -U pip six
+  # `six` should be included in `requirements.txt` but isn't. `mpyq` is an
+  # optional dependency that enables the replays to be checked for corruption.
+  python -m pip install -U pip six mpyq
   python -m pip install -r requirements.txt
 }
 
