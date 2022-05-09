@@ -21,6 +21,7 @@ readonly S2CLIENT_GIT_REPO=https://github.com/Blizzard/s2client-proto.git
 readonly S2CLIENT_TEMP_REPO_DIR=/tmp/s2client
 readonly TEST_CSV_URL=https://storage.cloud.google.com/dm-starcraft-offline-datasets/offline-test.csv
 readonly TRAIN_CSV_URL=https://storage.cloud.google.com/dm-starcraft-offline-datasets/offline-train.csv
+readonly DEBUG_CSV_URL=https://storage.cloud.google.com/dm-starcraft-offline-datasets/offline-debug.csv
 readonly VENV_DIR=/tmp/alphastar_unplugged_get_data_venv
 
 function get_user_config {
@@ -49,6 +50,7 @@ function get_user_config {
   echo
   echo 'Specify a comma-separated list of Starcraft versions to download '
   echo 'replays for (from 4.8.2, 4.8.3, 4.8.4, 4.8.6, 4.9.0, 4.9.1, 4.9.2).'
+  echo 'Only 4.9.2 is supported for the debug dataset.'
   echo
 
   read -p 'Starcraft versions: ' versions_list
@@ -56,6 +58,7 @@ function get_user_config {
 
   yes_no_prompt 'Download train dataset?' 'Y' && get_train='Y' || get_train='N'
   yes_no_prompt 'Download test dataset?' 'Y' && get_test='Y' || get_test='N'
+  yes_no_prompt 'Download debug dataset?' 'Y' && get_debug='Y' || get_debug='N'
 
   echo
   echo 'Settings:'
@@ -63,9 +66,10 @@ function get_user_config {
   echo "Client ID: ${client_id}"
   echo "Secret: ${secret}"
   echo "Root directory for saving replays: ${replay_root_dir}"
-  echo "Starcraft versions to fetch: ${versions[@]}"
   echo "Get training data? ${get_train}"
   echo "Get test data? ${get_test}"
+  echo "Get debug data (With debug data, only 4.9.2 version works)? ${get_debug}"
+  echo "Starcraft versions to fetch: ${versions[@]}"
   echo
 
   yes_no_prompt 'Continue?' 'Y' || { echo "Aborted"; exit 1; }
@@ -104,6 +108,7 @@ function yes_no_prompt {
 function prompt_user_to_download_csvs {
   train_csv_path="${replay_root_dir}/offline-train.csv"
   test_csv_path="${replay_root_dir}/offline-test.csv"
+  debug_csv_path="${replay_root_dir}/offline-debug.csv"
   if [[ ${get_train} == 'Y' ]]
   then
     echo "Download ${TRAIN_CSV_URL} and save it to ${train_csv_path}."
@@ -115,6 +120,12 @@ function prompt_user_to_download_csvs {
     echo "Download ${TEST_CSV_URL} and save it to ${test_csv_path}."
     read -p "Press <enter> when done"
     [[ -f "${test_csv_path}" ]] || { echo "${test_csv_path} not found" ; exit 1; }
+  fi
+  if [[ ${get_debug} == 'Y' ]]
+  then
+    echo "Download ${DEBUG_CSV_URL} and save it to ${debug_csv_path}."
+    read -p "Press <enter> when done"
+    [[ -f "${debug_csv_path}" ]] || { echo "${debug_csv_path} not found" ; exit 1; }
   fi
 }
 
@@ -143,16 +154,16 @@ function setup_python_env {
 }
 
 function download_replays {
-  local csv_path version train_or_test
+  local csv_path version dataset_type
   csv_path=$1
   version=$2
-  train_or_test=$3
-  echo "Downloading ${train_or_test} replays in ${csv_path} for version ${version}"
+  dataset_type=$3
+  echo "Downloading ${dataset_type} replays in ${csv_path} for version ${version}"
   python download_replays.py \
     --key=${client_id}  \
     --secret=${secret}  \
     --version=${version}  \
-    --replays_dir="${replay_root_dir}/${version}/${train_or_test}"  \
+    --replays_dir="${replay_root_dir}/${version}/${dataset_type}"  \
     --download_dir="${DOWNLOADS_DIR}"  \
     --filter_version=delete \
     --replayset_csv="${csv_path}" \
@@ -172,6 +183,9 @@ function main {
     fi
     if [[ ${get_test} == 'Y' ]]
       then download_replays ${test_csv_path} ${version} "test"
+    fi
+    if [[ ${get_debug} == 'Y' ]]
+      then download_replays ${debug_csv_path} ${version} "debug"
     fi
   done
   deactivate
