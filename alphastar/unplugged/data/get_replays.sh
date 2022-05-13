@@ -23,6 +23,7 @@ readonly TEST_CSV_URL=https://storage.cloud.google.com/dm-starcraft-offline-data
 readonly TRAIN_CSV_URL=https://storage.cloud.google.com/dm-starcraft-offline-datasets/offline-train.csv
 readonly DEBUG_CSV_URL=https://storage.cloud.google.com/dm-starcraft-offline-datasets/offline-debug.csv
 readonly VENV_DIR=/tmp/alphastar_unplugged_get_data_venv
+readonly DEBUG_VERSION='4.9.2'
 
 function get_user_config {
   echo
@@ -47,18 +48,25 @@ function get_user_config {
   replay_root_dir="${replay_root_dir/#\~/$HOME}"  # Expand "~" to "${HOME}"
   mkdir -p replay_root_dir
 
-  echo
-  echo 'Specify a comma-separated list of Starcraft versions to download '
-  echo 'replays for (from 4.8.2, 4.8.3, 4.8.4, 4.8.6, 4.9.0, 4.9.1, 4.9.2).'
-  echo 'Only 4.9.2 is supported for the debug dataset.'
-  echo
-
-  read -p 'Starcraft versions: ' versions_list
-  IFS=', ' read -r -a versions <<< "${versions_list}"
-
   yes_no_prompt 'Download train dataset?' 'Y' && get_train='Y' || get_train='N'
   yes_no_prompt 'Download test dataset?' 'Y' && get_test='Y' || get_test='N'
   yes_no_prompt 'Download debug dataset?' 'Y' && get_debug='Y' || get_debug='N'
+
+  echo
+  if [[ ${get_debug} == 'Y' ]]
+  then
+    echo "Selecting Starcraft version ${DEBUG_VERSION} because the debug "
+    echo 'dataset was requested, which is only supported for this version.'
+    version=${DEBUG_VERSION}
+  else
+    echo 'Specify which Starcraft version to download replays for '
+    echo '(from 4.8.2, 4.8.3, 4.8.4, 4.8.6, 4.9.0, 4.9.1, 4.9.2).'
+    read -p 'Starcraft version: ' version
+  fi
+  echo
+  echo 'Note: you will need to install the corresponding version of the '
+  echo 'Starcraft II binary when you come to process the replays.'
+  echo
 
   echo
   echo 'Settings:'
@@ -68,8 +76,8 @@ function get_user_config {
   echo "Root directory for saving replays: ${replay_root_dir}"
   echo "Get training data? ${get_train}"
   echo "Get test data? ${get_test}"
-  echo "Get debug data (With debug data, only 4.9.2 version works)? ${get_debug}"
-  echo "Starcraft versions to fetch: ${versions[@]}"
+  echo "Get debug data (requires version ${DEBUG_VERSION})? ${get_debug}"
+  echo "Starcraft version: ${version}"
   echo
 
   yes_no_prompt 'Continue?' 'Y' || { echo "Aborted"; exit 1; }
@@ -176,18 +184,15 @@ function main {
   prompt_user_to_download_csvs
   clone_s2_client_repo
   setup_python_env
-  for version in "${versions[@]}"
-  do
-    if [[ ${get_train} == 'Y' ]]
-      then download_replays ${train_csv_path} ${version} "train"
-    fi
-    if [[ ${get_test} == 'Y' ]]
-      then download_replays ${test_csv_path} ${version} "test"
-    fi
-    if [[ ${get_debug} == 'Y' ]]
-      then download_replays ${debug_csv_path} ${version} "debug"
-    fi
-  done
+  if [[ ${get_train} == 'Y' ]]
+    then download_replays ${train_csv_path} ${version} "train"
+  fi
+  if [[ ${get_test} == 'Y' ]]
+    then download_replays ${test_csv_path} ${version} "test"
+  fi
+  if [[ ${get_debug} == 'Y' ]]
+    then download_replays ${debug_csv_path} ${version} "debug"
+  fi
   deactivate
   popd
   echo "Finished downloading replay data to ${replay_root_dir}."
