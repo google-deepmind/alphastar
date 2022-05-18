@@ -32,25 +32,27 @@ when working with those datasets.
 
 Once the replays are downloaded they can be transformed from .SC2Replay files
 to converted .tfrecord files. As there is a large amount of data a simple means
-of parallelizing the computation is provided. First, run the following:
+of parallelizing the computation is provided. First, run the following from the
+root of the `alphastar` git repository:
+
 
 ```shell
-python3 generate_partitions.py  \
-  --sc2_replay_path=./replays/test/4.9.2  \
-  --converted_path=./converted/test/4.9.2  \
+python3 alphastar/unplugged/data/generate_partitions.py  \
+  --sc2_replay_path=${REPLAYS_DIR}/4.9.2/test  \
+  --converted_path=${REPLAYS_DIR}/converted/4.9.2/test  \
   --num_partitions=16  \
-  --partition_path=./partitions/test/4.9.2
+  --partition_path=${REPLAYS_DIR}/partitions/4.9.2/test
 ```
 
 Then instantiate the following once for each partition, making sure to update
---partition_file appropriately:
+`--partition_file` appropriately:
 
 ```shell
-python3 generate_dataset.py  \
-  --sc2_replay_path=./replays/test/4.9.2  \
-  --converted_path=./replays/converted/test/4.9.2  \
-  --partition_file=./partitions/test/4.9.2/partition_0  \
-  --converter_settings=path/to/alphastar_supervised_converter_settings.pbtxt  \
+python3 alphastar/unplugged/data/generate_dataset.py  \
+  --sc2_replay_path=${REPLAYS_DIR}/4.9.2/test  \
+  --converted_path=${REPLAYS_DIR}/converted/4.9.2/test  \
+  --partition_file=${REPLAYS_DIR}/partitions/4.9.2/test/partition_0  \
+  --converter_settings=alphastar/unplugged/configs/alphastar_supervised_converter_settings.pbtxt  \
   --logtostderr
 ```
 
