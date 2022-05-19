@@ -27,7 +27,7 @@ import jax.numpy as jnp
 
 
 def get_test_specs(is_training: bool
-                   ) -> Tuple[types.InputSpec, types.ActionSpec]:
+                   ) -> Tuple[types.SpecDict, types.ActionSpec]:
   """Return some input_spec and action_spec for testing."""
   max_num_selected_units = 4
   obs_spec = types.SpecDict()

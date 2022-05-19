@@ -24,7 +24,7 @@ import ml_collections
 
 
 def get_alphastar_standard(
-    input_spec: types.InputSpec,
+    input_spec: types.SpecDict,
     action_spec: types.ActionSpec,
     is_training: bool,
     overlap_len: int,

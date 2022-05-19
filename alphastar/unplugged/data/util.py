@@ -35,7 +35,7 @@ import tree
 
 
 def get_input_spec(
-    obs_spec: types.SpecDict,
+    obs_spec: types.ObsSpec,
     behaviour_features_spec: Optional[types.SpecDict] = None,
     prev_features_spec: Optional[types.SpecDict] = None
     ) -> types.SpecDict:

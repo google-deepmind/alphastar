@@ -112,7 +112,7 @@ def _get_unit_tags_head(action_spec: types.ActionSpec,
 
 
 def get_alphastar_dummy(
-    input_spec: types.InputSpec,
+    input_spec: types.SpecDict,
     action_spec: types.ActionSpec,
     is_training: bool,
     overlap_len: int,

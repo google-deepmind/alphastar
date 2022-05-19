@@ -224,7 +224,7 @@ class Component(abc.ABC):
                                   error_prefix=f"{self.name} next_state")
     return outputs, next_state, logs
 
-ArchitectureBuilder = Callable[[types.InputSpec, types.ActionSpec, bool],
+ArchitectureBuilder = Callable[[types.SpecDict, types.ActionSpec, bool],
                                Component]
 
 

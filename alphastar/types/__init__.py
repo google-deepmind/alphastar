@@ -16,7 +16,6 @@
 
 from alphastar.types.types import ActionSpec
 from alphastar.types.types import ArgumentName
-from alphastar.types.types import InputSpec
 from alphastar.types.types import NestedDict
 from alphastar.types.types import ObsSpec
 from alphastar.types.types import SpecDict

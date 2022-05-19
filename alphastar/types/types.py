@@ -37,7 +37,6 @@ import numpy as np
 ArgumentName = str
 ObsSpec = Mapping[str, specs.BoundedArray]
 ActionSpec = Mapping[ArgumentName, specs.BoundedArray]
-InputSpec = Mapping[str, Union[specs.BoundedArray, ObsSpec]]
 
 
 StreamType = Union[str, Sequence[str]]
