@@ -40,15 +40,27 @@ dummy datasource.
   1. Follow the instructions for data
   generation in [alphastar/unplugged/data/README.md](https://github.com/deepmind/alphastar/blob/master/alphastar/unplugged/data/README.md), 
 
-  2. Update the data paths in [alphastar/unplugged/data/paths.py](https://github.com/deepmind/alphastar/blob/master/alphastar/unplugged/data/paths.py) 
-  An example if the data generation wrote to `/tmp/data/<PATH >`
-  would be DEFAULT_BASE_PATH = '/tmp/data' and DATASET_PATHS would be a dict
-  `{(replay_versions, data_split, player_min_mmr): <PATH>}`. An example key
-  could look like this : `('4.9.2',), 'train', 3500).` While training, the particular data that you want can be set by setting the
-  replay_versions, data_split and player_min_mmr via the config using
-  `config.train.datasource.kwargs`
+  2. The next step is to create a paths python file with two constants
+   -  BASE_PATH and RELATIVE_PATHS. BASE_PATH is the root directory for the
+   converted datasets that were generated in Step 1.
+  RELATIVE_PATHS is a dictionary mapping of keys and values as follows :
+    {(replay_versions, data_split, player_min_mmr) : 
+    <Glob pattern relative to BASE_PATH for files>}
+  
+  We have provided a [template file] (https://github.com/deepmind/alphastar/blob/master/alphastar/unplugged/data/paths.py.template) for setting the data paths appropriately. Please copy this template 
+  file to some directory of choice 
+    ```cp alphastar/unplugged/data/paths.py.template /tmp/paths.py```
+  Modify the paths based on step 1 and use the file as  
+  `config.train.datasource.kwargs.dataset_paths_fname` while launching training.
 
-  3. After updating the data paths, run
+  While training, the particular data that you want to train on can be set by 
+  setting the `replay_versions`, `data_split`, `player_min_mmr` and 
+  `dataset_paths_fname` via the config using `config.train.datasource.kwargs`
+  or invoking the same on command line. 
+
+  3. After these two steps, run (to confirm the entire training apparatus with
+  training data from SC2 version 4.9.2, assuming that the paths file from step 
+  2 is `/tmp/paths.py`) 
 
   ```shell
   python alphastar/unplugged/scripts/train.py \
@@ -58,14 +70,22 @@ dummy datasource.
     --config.train.datasource.kwargs.shuffle_buffer_size=16 \
     --config.train.optimizer_kwargs.lr_frames_before_decay=4 \
     --config.train.learner_kwargs.unroll_len=3 \
-    --config.train.datasource.name=OfflineTFRecordDataSource
+    --config.train.datasource.name=OfflineTFRecordDataSource \
+    --config.train.datasource.kwargs.dataset_paths_fname='/tmp/paths.py' \
+    --config.train.datasource.kwargs.replay_versions='("4.9.2",)'
   ```
 
-  4. To run default full scale training after the real dataset is generated and the paths are updated, run
+  4. To run default full scale training after the real dataset is generated and 
+  the paths are updated, run the following command. 
+  Do note that the default setting is to run with all replay versions. 
+  If you want to run on specific replay versions only, please set 
+  `config.train.datasource.kwargs.replay_versions` as shown below.
 
   ```shell
   python alphastar/unplugged/scripts/train.py \
-    --config=alphastar/unplugged/configs/alphastar_supervised.py:alphastar.full
+    --config=alphastar/unplugged/configs/alphastar_supervised.py:alphastar.full \
+    --config.train.datasource.kwargs.dataset_paths_fname='/tmp/paths.py' \
+    --config.train.datasource.kwargs.replay_versions='("4.9.2",)'
   ```
 
 ### Evaluate a random agent

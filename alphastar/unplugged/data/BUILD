@@ -44,7 +44,7 @@ pytype_strict_library(
         ":data_source_base",
         ":util",
         "//alphastar/types:__init__",
-        "//alphastar/unplugged/data:paths",
+        "//alphastar/unplugged/data:path_utils",
         "@pysc2_archive//pysc2/env:converted_env",
         "@pysc2_archive//pysc2/env:enums",
         "@pysc2_archive//pysc2/env/converter/proto:converter_py_pb2",
@@ -63,6 +63,7 @@ py_binary(
         "@absl_py//absl/flags",
         "@absl_py//absl/logging",
         "@com_google_protobuf//:protobuf_python",
+        requirement("chex"),
         "@dm_env_archive//:dm_env",
         requirement("jax"),
         requirement("jaxlib"),
@@ -92,8 +93,8 @@ py_binary(
 )
 
 pytype_strict_library(
-    name = "paths",
-    srcs = ["paths.py"],
+    name = "path_utils",
+    srcs = ["path_utils.py"],
 )
 
 pytype_strict_library(

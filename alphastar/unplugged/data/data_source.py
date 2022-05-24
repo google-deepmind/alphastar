@@ -11,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """Data source for Riegeli-based datasets used in Alphastar offline training."""
 
 import functools
@@ -20,7 +19,7 @@ from typing import Any, Generator, Mapping, Optional, Sequence, Tuple
 from alphastar import types
 from alphastar.unplugged.data import data_source_base
 from alphastar.unplugged.data import util as data_utils
-from alphastar.unplugged.data import paths
+from alphastar.unplugged.data import path_utils
 from pysc2.env import converted_env
 from pysc2.env import enums as sc2_enums
 from pysc2.env.converter.proto import converter_pb2
@@ -89,6 +88,7 @@ class OfflineTFRecordDataSource(data_source_base.DataSource):
                converter_settings: converter_pb2.ConverterSettings,
                replay_versions: Sequence[str],
                player_min_mmr: int,
+               dataset_paths_fname: str,
                home_race: Optional[sc2_enums.Race],
                away_race: Optional[sc2_enums.Race],
                use_prev_features: bool,
@@ -107,6 +107,8 @@ class OfflineTFRecordDataSource(data_source_base.DataSource):
       replay_versions: Sequence of replay files that are used as part of the
         dataset.
       player_min_mmr: Minimum MMR for the games to be a part of the dataset.
+      dataset_paths_fname: Filename of the python file that contains the path
+        information for different replay versions and MMR combinations.
       home_race: Race of the player.
       away_race: Race of the opponent.
       use_prev_features: Whether to add the prev_feature field to the agent
@@ -137,8 +139,12 @@ class OfflineTFRecordDataSource(data_source_base.DataSource):
 
     self._replay_versions = tuple(replay_versions)
 
-    dataset_pattern = paths.get_dataset_pattern(
-        self._replay_versions, self._data_split, self._player_min_mmr)
+    dataset_pattern = path_utils.get_dataset_pattern(
+        self._replay_versions,
+        self._data_split,
+        self._player_min_mmr,
+        dataset_paths_fname)
+
     if dataset_pattern is None:
       raise ValueError(
           f'Dataset not found matching '

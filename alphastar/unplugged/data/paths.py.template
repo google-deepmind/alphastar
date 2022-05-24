@@ -1,0 +1,11 @@
+"""A template file with the essential constituents of a paths.py file"""
+
+BASE_PATH = ''
+
+# A mapping where the keys are (replay_versions, data_split, player_min_mmr)
+# tuples, and the values are glob expressions specifying where the corresponding
+# converted replay files are located relative to BASE_PATH.
+RELATIVE_PATHS = {
+    # Example:
+    # (('4.9.2',), 'train', 3500): 'tfrecords_train_4_9_2/*/*.tfrecord',
+}

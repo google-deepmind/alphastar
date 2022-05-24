@@ -11,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """Configuration for the supervised StarCraft II JaxCraft pipeline."""
 
 import datetime
@@ -24,9 +23,8 @@ from pysc2.env.converter.proto import converter_pb2
 
 from s2clientprotocol import common_pb2
 
-_EVAL_MAP_NAMES = (
-    "KairosJunction", "KingsCove", "CyberForest", "NewRepugnancy"
-)
+_EVAL_MAP_NAMES = ("KairosJunction", "KingsCove", "CyberForest",
+                   "NewRepugnancy")
 
 _EVAL_COMPETITORS = (
     # Built-in AI
@@ -34,9 +32,8 @@ _EVAL_COMPETITORS = (
     "very_hard",
 )
 
-_DEFAULT_REPLAY_VERSIONS = (
-    "4.8.2", "4.8.3", "4.8.4", "4.8.6", "4.9.0", "4.9.1", "4.9.2"
-)
+_DEFAULT_REPLAY_VERSIONS = ("4.8.2", "4.8.3", "4.8.4", "4.8.6", "4.9.0",
+                            "4.9.1", "4.9.2",)
 
 # These parameters are only used internally in this config:
 _NUM_UPGRADES = 90  # v3
@@ -56,8 +53,7 @@ NUM_RAW_FUNCTIONS = 556  # v4
 
 
 def get_converter_settings(
-    use_supervised: bool,
-) -> converter_pb2.ConverterSettings:
+    use_supervised: bool,) -> converter_pb2.ConverterSettings:
   return converter_pb2.ConverterSettings(
       raw_settings=converter_pb2.ConverterSettings.RawSettings(
           resolution=common_pb2.Size2DI(x=_WORLD_DIM, y=_WORLD_DIM),
@@ -87,6 +83,7 @@ def get_converter_settings(
       mmr=6000,
       supervised=use_supervised,
       crop_to_playable_area=False)
+
 
 SUPERVISED_CONVERTER_SETTINGS = get_converter_settings(use_supervised=True)
 EVAL_CONVERTER_SETTINGS = get_converter_settings(use_supervised=False)
@@ -138,12 +135,14 @@ def get_config(arch_str: str) -> ml_collections.ConfigDict:
   config.train.init_checkpoint_path: Optional[str] = None
 
   # All valid Kwargs for Checkpointer() in acme/tf/savers.py
-  config.train.checkpoint_kwargs = ml_collections.ConfigDict(dict(
-      subdirectory="learner",
-      checkpoint_ttl_seconds=int(datetime.timedelta(days=90).total_seconds()),
-      time_delta_minutes=5,
-      add_uid=True,
-      max_to_keep=5))
+  config.train.checkpoint_kwargs = ml_collections.ConfigDict(
+      dict(
+          subdirectory="learner",
+          checkpoint_ttl_seconds=int(
+              datetime.timedelta(days=90).total_seconds()),
+          time_delta_minutes=5,
+          add_uid=True,
+          max_to_keep=5))
 
   config.train.datasource = ml_collections.ConfigDict(
       dict(
@@ -151,6 +150,9 @@ def get_config(arch_str: str) -> ml_collections.ConfigDict:
           kwargs=dict(
               replay_versions=_DEFAULT_REPLAY_VERSIONS,
               player_min_mmr=3500,
+              # This file is dynamically imported during training using
+              # importlib.
+              dataset_paths_fname="",
               home_race=None,
               away_race=None,
               use_prev_features=True,
@@ -202,7 +204,5 @@ def get_config(arch_str: str) -> ml_collections.ConfigDict:
   config.architecture.kwargs.config = arch_util.get_default_config(arch_str)
 
   config.converter_settings = ml_collections.ConfigDict(
-      dict(
-          train=SUPERVISED_CONVERTER_SETTINGS,
-          eval=EVAL_CONVERTER_SETTINGS))
+      dict(train=SUPERVISED_CONVERTER_SETTINGS, eval=EVAL_CONVERTER_SETTINGS))
   return config
