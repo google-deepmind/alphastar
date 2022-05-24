@@ -142,6 +142,23 @@ pytype_strict_contrib_test(
     ],
 )
 
+py_strict_test(
+    name = "agent_test",
+    srcs = ["agent_test.py"],
+    shard_count = 4,
+    deps = [
+        ":agent",
+        "//alphastar/architectures",
+        "//alphastar/commons:jax_utils",
+        "//alphastar/unplugged/data:util",
+        "@dm_env_archive//:specs",
+        requirement("jax"),
+        requirement("jaxlib"),
+        "@absl_py//absl/testing:absltest",
+        "@absl_py//absl/testing:parameterized",
+    ],
+)
+
 pytype_strict_contrib_test(
     name = "evaluator_test_internal",
     timeout = "eternal",  # TODO(b/200647364)
