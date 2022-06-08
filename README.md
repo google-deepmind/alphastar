@@ -47,6 +47,17 @@ For quickstart instructions on how to run training and evaluation scripts in
 In this repository, we have not provided any online RL training code. But, the
 architectures are fit to be used in both online and offline training.
 
+## Building with Bazel
+
+AlphaStar depends on [PySC2](https://github.com/deepmind/pysc2)
+converters for data generation and evaluation. Since
+the code for converters is written in C++, any changes to the converter code 
+need a new PySC2 wheel to be built with those changes followed by installation 
+of the wheel. One can skip this step of wheel building and directly build the
+AlphaStar package with bazel. Instructions on how to build and run code
+with Bazel are identical to the [instructions]
+(https://github.com/deepmind/pysc2/docs/bazel.md) in the PySC2 repository. 
+
 ## About
 
 Disclaimer: This is not an official Google product.
