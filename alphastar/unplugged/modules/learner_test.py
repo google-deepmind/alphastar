@@ -37,6 +37,7 @@ class DistributedAgentLearnerTest(parameterized.TestCase):
     expt_config = expt_config_module.get_config(architecture)
     expt_config.train.learner_kwargs.batch_size = 4
     expt_config.train.learner_kwargs.unroll_len = 3
+    expt_config.train.learner_kwargs.log_to_csv = False
     expt_config.train.datasource.kwargs.shuffle_buffer_size = 16
     expt_config.train.max_number_of_frames = 96
     expt_config.architecture.name = architecture
