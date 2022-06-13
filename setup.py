@@ -39,7 +39,7 @@ setup(
     # PySC2 is resolved.
     install_requires=[
         'apache-beam[gcp]',
-        'dm-acme[jax,tf]',
+        'dm-acme[jax,tf]>=0.2.4',
         's2clientprotocol',
         'pysc2',
         'ml-collections',

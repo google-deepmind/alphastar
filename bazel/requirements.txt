@@ -1,5 +1,5 @@
 apache-beam
-dm-acme[jax,tf]
+dm-acme[jax,tf]>=0.2.4
 dm-haiku
 dm-pix
 dm-reverb
