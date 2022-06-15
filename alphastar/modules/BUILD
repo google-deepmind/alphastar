@@ -85,7 +85,7 @@ pytype_strict_library(
     srcs_version = "PY3",
     deps = [
         "//alphastar/commons:log_utils",
-        "//alphastar/types:__init__",
+        requirement("chex"),
         "@dm_env_archive//:dm_env",
     ],
 )

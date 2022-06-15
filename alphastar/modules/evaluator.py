@@ -20,7 +20,7 @@ import concurrent
 import contextlib
 import sys
 import traceback
-from typing import Any, Dict, Iterator, Optional, Sequence, Tuple, Union
+from typing import Any, Iterator, Mapping, Optional, Sequence, Tuple, Union
 
 from absl import logging
 import acme
@@ -119,7 +119,7 @@ class StepEvaluationMixin(object):
   def _step(
       self, timestep: dm_env.TimeStep,
       agent_params: hk.Params,
-  ) -> Tuple[types.StreamDict, log_utils.Log]:
+  ) -> Tuple[chex.ArrayTree, log_utils.Log]:
     """Step through the environment for one step."""
     agent_obs = types.StreamDict()
     agent_obs['step_type'] = np.array([[timestep.step_type]], dtype=np.int32)
@@ -187,7 +187,7 @@ class CheckpointEvaluator(evaluator_base.Evaluator, StepEvaluationMixin):
     self._checkpoint_index = None
     self._learner_frames_per_step = learner_frames_per_step
 
-  def reset(self) -> Dict[str, chex.Array]:
+  def reset(self) -> Mapping[str, chex.Array]:
     self._checkpoint_state, checkpoint_index = next(self._checkpoint_generator)
     if _tree_has_nan(self._checkpoint_state.params):
       raise ValueError(
@@ -205,7 +205,7 @@ class CheckpointEvaluator(evaluator_base.Evaluator, StepEvaluationMixin):
 
   def step(
       self, timestep: dm_env.TimeStep
-  ) -> Tuple[types.StreamDict, log_utils.Log]:
+  ) -> Tuple[chex.ArrayTree, log_utils.Log]:
     return self._step(timestep, self._get_params())
 
 
@@ -241,7 +241,7 @@ class RandomParamsEvaluator(evaluator_base.Evaluator, StepEvaluationMixin):
         output_features=output_features)
     self._learner_frames_per_step = learner_frames_per_step
 
-  def reset(self) -> Dict[str, chex.Array]:
+  def reset(self) -> Mapping[str, chex.Array]:
     return dict(checkpoint_index=-1, learner_step=-1, home_steps=-1)
 
   def _get_params(self):
@@ -251,7 +251,7 @@ class RandomParamsEvaluator(evaluator_base.Evaluator, StepEvaluationMixin):
 
   def step(
       self, timestep: dm_env.TimeStep
-  ) -> Tuple[types.StreamDict, log_utils.Log]:
+  ) -> Tuple[chex.ArrayTree, log_utils.Log]:
     return self._step(timestep, self._get_params())
 
 

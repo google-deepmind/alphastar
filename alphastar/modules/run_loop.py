@@ -43,6 +43,9 @@ def play_episode(
 
   Returns:
     Replay bytes.
+
+  Raises:
+    RuntimeError: if the agent output has a wrong format.
   """
   timestep = env.step({})
   step_counter = 0
@@ -58,11 +61,14 @@ def play_episode(
         log=logs,
         static_log=static_log)
     # Can this be done by the evaluator(s)?
+    if 'action' not in agent_output:
+      raise RuntimeError(
+          'The agent must provide an "action" key in its output.')
     try:
       timestep = env.step(jax.tree_map(np.squeeze, agent_output.get('action')))
     except TypeError as e:
       raise RuntimeError(
-          f'Action issue in stepping : {agent_output["action"]} error : {e}')
+          f'Action issue in stepping : {agent_output["action"]}') from e
     step_counter += 1
     if max_num_steps and step_counter >= max_num_steps:
       break

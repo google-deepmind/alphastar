@@ -16,10 +16,10 @@
 
 import abc
 import enum
-from typing import Tuple
+from typing import Mapping, Tuple
 
-from alphastar import types
 from alphastar.commons import log_utils
+import chex
 import dm_env
 
 
@@ -33,7 +33,7 @@ class Evaluator(abc.ABC):
   """Evaluator abstraction."""
 
   @abc.abstractmethod
-  def reset(self) -> types.StreamDict:
+  def reset(self) -> Mapping[str, chex.Array]:
     """Resets the evaluator in preparation for a new episode.
 
     Returns:
@@ -43,7 +43,7 @@ class Evaluator(abc.ABC):
   @abc.abstractmethod
   def step(
       self, timestep: dm_env.TimeStep
-  ) -> Tuple[types.StreamDict, log_utils.Log]:
+  ) -> Tuple[chex.ArrayTree, log_utils.Log]:
     """Steps the evaluator.
 
     Args:
