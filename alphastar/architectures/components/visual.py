@@ -14,7 +14,7 @@
 
 """Visual-based modules, acting on 2d feature maps."""
 
-from typing import Callable, Optional, Sequence
+from typing import Callable, Optional, Sequence, Tuple, Union
 
 from alphastar import types
 from alphastar.architectures import modular
@@ -36,22 +36,25 @@ class SingleFeatureEncoder(modular.BatchedComponent):
   def __init__(self,
                input_name: types.StreamType,
                output_name: types.StreamType,
-               input_spatial_size: int,
+               input_spatial_size: Union[int, Tuple[int, int]],
                downscale_factor: int,
                output_features_size: int,
                kernel_size: int,
-               fun: Callable[[chex.Array], chex.Array],
+               fun: Callable[[chex.Array], chex.Array] = lambda x: x,
+               input_dtype: jnp.dtype = jnp.uint8,
                name: Optional[str] = None):
     """Initializes SingleFeatureEncoder module.
 
     Args:
       input_name: The name of the input to use, of shape
-        [input_spatial_size, input_spatial_size] and dtype int32.
+        [input_spatial_size[0], input_spatial_size[1]] and dtype input_dtype.
       output_name: The name to give to the output, of shape
-        [input_spatial_size / downscale_factor,
-         input_spatial_size / downscale_factor,
+        [input_spatial_size[0] / downscale_factor,
+         input_spatial_size[1] / downscale_factor,
          output_features_size] and dtype float32.
       input_spatial_size: The spatial size of the input to encode.
+        If the input is square, a single int can be used, otherwise
+        a pair is required.
       downscale_factor: The downscale factor to apply to the input.
       output_features_size: The number of feature planes of the output.
       kernel_size: The size of the convolution kernel to use. Note that with
@@ -59,32 +62,40 @@ class SingleFeatureEncoder(modular.BatchedComponent):
         will result in a checkerboard pattern, so it is not recommended.
       fun: An optional function to apply to the input before applying the
         convolution.
+      input_dtype: The type of the input.
       name: The name of this component.
     """
     super().__init__(name=name)
     self._input_name = input_name
     self._output_name = output_name
-    self._input_spatial_size = input_spatial_size
-    if input_spatial_size % downscale_factor:
-      raise ValueError(f'input_spatial_size ({input_spatial_size}) must be a '
-                       f'multiple of downscale_factor ({downscale_factor}).')
+    if isinstance(input_spatial_size, int):
+      self._input_spatial_size = (input_spatial_size, input_spatial_size)
+    else:
+      self._input_spatial_size = input_spatial_size
+    for i in range(2):
+      if self._input_spatial_size[i] % downscale_factor:
+        raise ValueError(f'input_spatial_size[{i}] must be a multiple of '
+                         f'downscale_factor ({downscale_factor}) but is '
+                         f'({self._input_spatial_size[i]}).')
     self._downscale_factor = downscale_factor
     self._output_features_size = output_features_size
     self._kernel_size = kernel_size
     self._fun = fun
+    self._input_dtype = input_dtype
 
   @property
   def input_spec(self) -> types.SpecDict:
     return types.SpecDict({
-        self._input_name: specs.Array(
-            (self._input_spatial_size, self._input_spatial_size), jnp.uint8)})
+        self._input_name: specs.Array(self._input_spatial_size,
+                                      self._input_dtype)})
 
   @property
   def output_spec(self) -> types.SpecDict:
-    output_size = self._input_spatial_size // self._downscale_factor
+    output_size = tuple(size // self._downscale_factor
+                        for size in self._input_spatial_size)
     return types.SpecDict({
         self._output_name: specs.Array(
-            (output_size, output_size, self._output_features_size), jnp.float32)
+            output_size + (self._output_features_size,), jnp.float32)
     })
 
   def _forward(self, inputs: types.StreamDict) -> modular.ForwardOutputType:

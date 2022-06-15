@@ -14,7 +14,7 @@
 
 """Tests for visual."""
 
-from typing import Callable, Optional, Sequence
+from typing import Callable, Optional, Sequence, Tuple, Union
 
 from absl.testing import absltest
 from absl.testing import parameterized
@@ -30,18 +30,20 @@ class VisualTest(test_utils.ComponentTest):
 
   @parameterized.product(
       is_training=[True, False],
-      input_spatial_size=[1, 3],
+      input_spatial_size=[1, 3, [4, 2]],
       downscale_factor=[1, 2, 3],
       output_features_size=[1, 5],
       kernel_size=[1, 2, 3],
-      fun=[jnp.sqrt, jnp.log1p])
+      fun=[jnp.sqrt, jnp.log1p],
+      input_dtype=[jnp.uint8, jnp.float32])
   def test_SingleFeatureEncoder(self,
                                 is_training: bool,
-                                input_spatial_size: int,
+                                input_spatial_size: Union[int, Tuple[int, int]],
                                 downscale_factor: int,
                                 output_features_size: int,
                                 kernel_size: int,
-                                fun: Callable[[chex.Array], chex.Array]):
+                                fun: Callable[[chex.Array], chex.Array],
+                                input_dtype: jnp.dtype):
     kwargs = dict(
         input_name='input_stream',
         output_name='output_stream',
@@ -49,8 +51,12 @@ class VisualTest(test_utils.ComponentTest):
         downscale_factor=downscale_factor,
         output_features_size=output_features_size,
         kernel_size=kernel_size,
-        fun=fun)
-    if input_spatial_size % downscale_factor != 0:
+        fun=fun,
+        input_dtype=input_dtype)
+    if isinstance(input_spatial_size, int):
+      input_spatial_size = (input_spatial_size, input_spatial_size)
+    if ((input_spatial_size[0] % downscale_factor != 0) or
+        (input_spatial_size[1] % downscale_factor != 0)):
       with self.assertRaises(ValueError):
         _ = visual.SingleFeatureEncoder(**kwargs)
     else:
