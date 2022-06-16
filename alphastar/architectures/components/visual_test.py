@@ -31,23 +31,26 @@ class VisualTest(test_utils.ComponentTest):
   @parameterized.product(
       is_training=[True, False],
       input_spatial_size=[1, 3, [4, 2]],
+      input_feature_size=[None, 3],
       downscale_factor=[1, 2, 3],
       output_features_size=[1, 5],
       kernel_size=[1, 2, 3],
       fun=[jnp.sqrt, jnp.log1p],
       input_dtype=[jnp.uint8, jnp.float32])
-  def test_SingleFeatureEncoder(self,
-                                is_training: bool,
-                                input_spatial_size: Union[int, Tuple[int, int]],
-                                downscale_factor: int,
-                                output_features_size: int,
-                                kernel_size: int,
-                                fun: Callable[[chex.Array], chex.Array],
-                                input_dtype: jnp.dtype):
+  def test_FeatureEncoder(self,
+                          is_training: bool,
+                          input_spatial_size: Union[int, Tuple[int, int]],
+                          input_feature_size: Optional[int],
+                          downscale_factor: int,
+                          output_features_size: int,
+                          kernel_size: int,
+                          fun: Callable[[chex.Array], chex.Array],
+                          input_dtype: jnp.dtype):
     kwargs = dict(
         input_name='input_stream',
         output_name='output_stream',
         input_spatial_size=input_spatial_size,
+        input_feature_size=input_feature_size,
         downscale_factor=downscale_factor,
         output_features_size=output_features_size,
         kernel_size=kernel_size,
@@ -58,9 +61,9 @@ class VisualTest(test_utils.ComponentTest):
     if ((input_spatial_size[0] % downscale_factor != 0) or
         (input_spatial_size[1] % downscale_factor != 0)):
       with self.assertRaises(ValueError):
-        _ = visual.SingleFeatureEncoder(**kwargs)
+        _ = visual.FeatureEncoder(**kwargs)
     else:
-      component = visual.SingleFeatureEncoder(**kwargs)
+      component = visual.FeatureEncoder(**kwargs)
       self._test_component(
           component, batch_size=2, unroll_len=3 if is_training else 1)
 

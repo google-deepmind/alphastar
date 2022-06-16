@@ -186,11 +186,12 @@ def get_visual_encoder(obs_spec: types.ObsSpec,
   streams_to_merge = []
   for feature_name in minimap_features:
     if feature_name == "minimap_height_map":
-      component.append(visual.SingleFeatureEncoder(
+      component.append(visual.FeatureEncoder(
           name="minimap_height_map",
           input_name=("observation", feature_name),
           output_name=f"{feature_name}_embedding",
           input_spatial_size=spatial_size,
+          input_feature_size=None,
           downscale_factor=config.downscale_factor,
           output_features_size=visual_features_size,
           **config.minimap_height_map))
