@@ -19,6 +19,7 @@ import functools
 from absl.testing import absltest
 from absl.testing import parameterized
 from alphastar.architectures import architectures
+from alphastar.commons import jax_utils
 from alphastar.modules import optimizers
 from alphastar.unplugged import losses
 from alphastar.unplugged.configs import alphastar_supervised as expt_config_module
@@ -26,6 +27,15 @@ from alphastar.unplugged.data import data_source
 from alphastar.unplugged.data import data_source_base
 from alphastar.unplugged.modules import learner
 import jax
+
+
+def setUpModule():
+  # Disable JAX optimizations in order to speed up compilation.
+  jax_utils.disable_jax_optimizations()
+
+
+def tearDownModule():
+  jax_utils.restore_jax_config()
 
 
 class DistributedAgentLearnerTest(parameterized.TestCase):

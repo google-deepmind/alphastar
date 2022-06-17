@@ -23,6 +23,15 @@ from dm_env import specs
 import jax.numpy as jnp
 
 
+def setUpModule():
+  # Disable JAX optimizations in order to speed up compilation.
+  jax_utils.disable_jax_optimizations()
+
+
+def tearDownModule():
+  jax_utils.restore_jax_config()
+
+
 def get_test_specs():
   max_num_selected_units = 4
   obs_spec = {

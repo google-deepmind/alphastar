@@ -18,6 +18,19 @@ import contextlib
 
 import jax
 
+_PREV_JAX_CONFIG = None
+
+
+def disable_jax_optimizations():
+  global _PREV_JAX_CONFIG
+  _PREV_JAX_CONFIG = jax.config.values.copy()
+  jax.config.update('jax_disable_most_optimizations', True)
+
+
+def restore_jax_config():
+  if _PREV_JAX_CONFIG:
+    jax.config.values.update(**_PREV_JAX_CONFIG)
+
 
 def _disabled_backend_compile(*args, **kwargs):
   raise RuntimeError('Attempt to compile a JAX program to XLA, but '

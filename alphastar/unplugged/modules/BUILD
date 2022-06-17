@@ -8,12 +8,12 @@ package(default_visibility = ["//visibility:public"])
 
 py_strict_test(
     name = "learner_test",
-    timeout = "long",
     srcs = ["learner_test.py"],
     shard_count = 2,
     deps = [
         ":learner",
         "//alphastar/architectures",
+        "//alphastar/commons:jax_utils",
         "//alphastar/modules:optimizers",
         "//alphastar/unplugged/configs",
         "//alphastar/unplugged/data:data_source",
