@@ -29,7 +29,6 @@ pytype_strict_library(
 
 py_strict_test(
     name = "optimizers_test",
-    timeout = "long",
     srcs = ["optimizers_test.py"],
     python_version = "PY3",
     srcs_version = "PY3",
@@ -61,13 +60,13 @@ pytype_strict_library(
 
 py_strict_test(
     name = "common_test",
-    timeout = "long",
     srcs = ["common_test.py"],
     deps = [
         ":common",
         ":optimizers",
         requirement("dm-acme"),
         "//alphastar/architectures",
+        "//alphastar/commons:jax_utils",
         "//alphastar/unplugged/configs",
         "//alphastar/unplugged/data:data_source",
         "//alphastar/unplugged/losses:__init__",
@@ -106,7 +105,6 @@ pytype_strict_library(
 
 py_strict_test(
     name = "match_generator_test",
-    timeout = "long",
     srcs = ["match_generator_test.py"],
     python_version = "PY3",
     srcs_version = "PY3",

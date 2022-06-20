@@ -20,6 +20,7 @@ import os
 from absl.testing import absltest
 from acme.tf import savers as tf_savers
 from alphastar.architectures import architectures
+from alphastar.commons import jax_utils
 from alphastar.modules import common
 from alphastar.modules import optimizers
 from alphastar.unplugged import losses
@@ -28,6 +29,15 @@ from alphastar.unplugged.data import data_source
 from alphastar.unplugged.modules import learner as supervised_learner
 import chex
 import jax
+
+
+def setUpModule():
+  # Disable JAX optimizations in order to speed up compilation.
+  jax_utils.disable_jax_optimizations()
+
+
+def tearDownModule():
+  jax_utils.restore_jax_config()
 
 
 class CommonTest(absltest.TestCase):
