@@ -32,6 +32,17 @@ git_repository(
     branch = "master",
 )
 
+# Note: if you wish to use a local repository for PySC2 rather than fetching the
+# sources from GitHub (e.g. because you have made local modifications), please
+# comment out the section above and uncomment the section below, substituting
+# the real path to the local repository. See here for further information:
+# https://docs.bazel.build/versions/main/be/workspace.html#local_repository
+#
+# local_repository(
+#     name = "pysc2_archive",
+#     path = "/some/path/to/starcraft2",  # Replace with the real repo path
+# )
+
 load("@pysc2_archive//bazel:create_external_repos.bzl", "pysc2_create_external_repos")
 pysc2_create_external_repos(pysc2_repo_name = "pysc2_archive")
 
