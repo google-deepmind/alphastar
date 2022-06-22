@@ -455,7 +455,7 @@ class ToVector(modular.BatchedComponent):
   def __init__(self,
                input_name: types.StreamType,
                output_name: types.StreamType,
-               input_spatial_size: int,
+               input_spatial_size: Union[int, Tuple[int, int]],
                input_features_size: int,
                vector_stream_size: int,
                hidden_feature_sizes: Sequence[int],
@@ -467,11 +467,12 @@ class ToVector(modular.BatchedComponent):
 
     Args:
       input_name: The name of the input to use, of shape
-        [input_spatial_size, input_spatial_size, input_features_size] and dtype
-        float32.
+        [input_spatial_size[0], input_spatial_size[1], input_features_size]
+        and dtype float32.
       output_name: The name to give to the output, of shape [output_size] and
         dtype float32.
-      input_spatial_size: The spatial size of the input.
+      input_spatial_size: The spatial size of the input. If the input is square,
+        a single int can be used, otherwise a pair is required.
       input_features_size: The number of feature planes of the input.
       vector_stream_size: The size of the output (1d vector representation).
       hidden_feature_sizes: The list of number of feature planes in the
@@ -487,12 +488,17 @@ class ToVector(modular.BatchedComponent):
     super().__init__(name=name)
     self._input_name = input_name
     self._output_name = output_name
-    if input_spatial_size % (downscale_factor ** len(hidden_feature_sizes)):
-      raise ValueError(
-          f'input_spatial_size ({input_spatial_size}) must be a multiple of '
-          f'downscale_factor ({downscale_factor}) to the power of '
-          f'len(hidden_feature_sizes) ({len(hidden_feature_sizes)}).')
-    self._input_spatial_size = input_spatial_size
+    if isinstance(input_spatial_size, int):
+      self._input_spatial_size = (input_spatial_size, input_spatial_size)
+    else:
+      self._input_spatial_size = tuple(input_spatial_size)
+    total_downscale_factor = downscale_factor ** len(hidden_feature_sizes)
+    for i in range(2):
+      if self._input_spatial_size[i] % total_downscale_factor:
+        raise ValueError(
+            f'input_spatial_size[{i}] ({input_spatial_size}) must be a '
+            f'multiple of downscale_factor ({downscale_factor}) to the power '
+            f'of len(hidden_feature_sizes) ({len(hidden_feature_sizes)}).')
     self._input_features_size = input_features_size
     self._vector_stream_size = vector_stream_size
     self._hidden_feature_sizes = hidden_feature_sizes
@@ -503,8 +509,8 @@ class ToVector(modular.BatchedComponent):
   @property
   def input_spec(self) -> types.SpecDict:
     return types.SpecDict({
-        self._input_name: specs.Array((self._input_spatial_size,
-                                       self._input_spatial_size,
+        self._input_name: specs.Array((self._input_spatial_size[0],
+                                       self._input_spatial_size[1],
                                        self._input_features_size),
                                       jnp.float32)})
 

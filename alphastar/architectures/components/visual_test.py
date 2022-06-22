@@ -209,7 +209,7 @@ class VisualTest(test_utils.ComponentTest):
 
   @parameterized.product(
       is_training=[True, False],
-      input_spatial_size=[1, 4],
+      input_spatial_size=[1, 4, [3, 4]],
       input_features_size=[1, 3],
       output_size=[3],
       hidden_feature_sizes=[[], [2, 3]],
@@ -234,8 +234,11 @@ class VisualTest(test_utils.ComponentTest):
                   downscale_factor=downscale_factor,
                   kernel_size=kernel_size,
                   use_layer_norm=use_layer_norm)
-    if (input_spatial_size %
-        (downscale_factor ** len(hidden_feature_sizes)) != 0):
+    if isinstance(input_spatial_size, int):
+      input_spatial_size = (input_spatial_size, input_spatial_size)
+    total_downscale_factor = downscale_factor ** len(hidden_feature_sizes)
+    if ((input_spatial_size[0] % total_downscale_factor != 0) or
+        (input_spatial_size[1] % total_downscale_factor != 0)):
       with self.assertRaises(ValueError):
         _ = visual.ToVector(**kwargs)
     else:
