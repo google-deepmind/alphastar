@@ -60,6 +60,7 @@ pytype_strict_library(
 
 py_strict_test(
     name = "common_test",
+    timeout = "long",
     srcs = ["common_test.py"],
     deps = [
         ":common",
