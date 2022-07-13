@@ -41,7 +41,7 @@ setup(
         'apache-beam[gcp]',
         'dm-acme[jax,tf]>=0.2.4',
         's2clientprotocol',
-        'pysc2',
+        'pysc2>=4.0.0',
         'ml-collections',
         'tensorflow-datasets',
         'pandas',
