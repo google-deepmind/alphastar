@@ -38,7 +38,7 @@ setup(
     # dm-acme 0.2.4 until the clash of pybind11 absl status bindings with
     # PySC2 is resolved.
     install_requires=[
-        'apache-beam[gcp]',
+        'apache-beam',
         'dm-acme[jax,tf]>=0.2.4',
         's2clientprotocol',
         'pysc2>=4.0.0',
