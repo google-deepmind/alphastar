@@ -25,11 +25,11 @@ http_archive(
     urls = ["https://github.com/bazelbuild/bazel-skylib/archive/main.zip"],
 )
 
-# We can't pip install PySC2 (yet).
 git_repository(
     name = "pysc2_archive",
-    remote = "sso://team/deepmind-sc2/starcraft2",
-    branch = "master",
+    remote = "https://github.com/deepmind/pysc2.git",
+    commit = "574744a5a983d227f2626c3ab487705148e4cbaf",
+    shallow_since = "1657713076 +0100"
 )
 
 # Note: if you wish to use a local repository for PySC2 rather than fetching the
