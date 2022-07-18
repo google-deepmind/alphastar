@@ -177,7 +177,7 @@ def get_optimizer(
     def mask_fn(params):
       all_masks = [f(params) for f in mask_fns]
       if all_masks:
-        output = jax.tree_multimap(lambda *masks: all(masks), *all_masks)
+        output = jax.tree_map(lambda *masks: all(masks), *all_masks)
       else:
         output = jax.tree_map(lambda _: True, params)
       logging.info('Using weight decay filter:\n%s', output)

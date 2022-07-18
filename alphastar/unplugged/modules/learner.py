@@ -236,7 +236,7 @@ class SupervisedLearner(acme.Learner):
       prefix = (num_devices, x.shape[0] // num_devices)
       return np.reshape(x, prefix + x.shape[1:])
 
-    multi_inputs = jax.tree_multimap(add_core_dimension, data)
+    multi_inputs = jax.tree_map(add_core_dimension, data)
     return multi_inputs
 
   def step(self):
