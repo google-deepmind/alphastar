@@ -17,6 +17,10 @@
 from setuptools import find_packages
 from setuptools import setup
 
+with open('requirements.txt') as f:
+  required = f.read().splitlines()
+
+
 LONG_DESCRIPTION = (
     'This package provides libraries for ML-friendly Starcraft II trajectory '
     'data generation, architectures and agents along with the entire training '
@@ -37,18 +41,7 @@ setup(
     packages=find_packages(),
     # dm-acme 0.2.4 until the clash of pybind11 absl status bindings with
     # PySC2 is resolved.
-    install_requires=[
-        'apache-beam',
-        'dm-acme[jax,tf]>=0.2.4',
-        's2clientprotocol',
-        'pysc2>=4.0.0',
-        'ml-collections',
-        'tensorflow-datasets',
-        'pandas',
-        'jax>=0.2.26',
-        'jaxlib',
-        'dm-pix'
-    ],
+    install_requires=required,
     classifiers=[
         'Development Status :: 4 - Beta',
         'Environment :: Console',
