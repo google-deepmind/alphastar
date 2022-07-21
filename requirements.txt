@@ -5,6 +5,6 @@ pysc2>=4.0.0
 ml-collections
 tensorflow-datasets
 pandas
-jax>-0.2.26
+jax>=0.2.26
 jaxlib
 dm-pix
