@@ -14,8 +14,16 @@
 
 """Module setuptools script."""
 
+from importlib import util
 from setuptools import find_packages
 from setuptools import setup
+
+
+def get_version():
+  spec = util.spec_from_file_location('_metadata', 'alphastar/_metadata.py')
+  mod = util.module_from_spec(spec)
+  spec.loader.exec_module(mod)
+  return mod.__version__
 
 with open('requirements.txt') as f:
   required = f.read().splitlines()
@@ -29,7 +37,7 @@ LONG_DESCRIPTION = (
 
 setup(
     name='AlphaStar',
-    version='1.0.0',
+    version=get_version(),
     description='Package for offline RL agent training and evaluation on StarCraftII',
     long_description=LONG_DESCRIPTION,
     author='DeepMind',
