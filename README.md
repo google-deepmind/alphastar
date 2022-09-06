@@ -19,6 +19,8 @@ StarCraft II, we provide the following key offerings with this package:
 
 We have tested AlphaStar only in **Python3.9** and **Linux**. Currently, we do
 not support other operating systems and recommend users to stick to Linux.
+The supported StarCraft game version for reproducibility is 
+[4.9.2](https://github.com/Blizzard/s2client-proto#downloads)
 
 ### Preliminaries
 
