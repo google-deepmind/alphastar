@@ -7,13 +7,13 @@ master StarCraft II offered by [Blizzard Entertainment](http://blizzard.com).
 As part of our open-sourcing efforts to drive more research interest around
 StarCraft II, we provide the following key offerings with this package:
 
-1.  General purpose architectures to train StarCraftII agents in
-    `architectures/` that can be used with different learning algorithms in
+1.  General purpose [architectures](https://github.com/deepmind/alphastar/tree/main/alphastar/architectures)
+    to train StarCraftII agents  that can be used with different learning algorithms in
     online and offline settings.
 
-2.  Data readers, offline training and evaluation scripts for fully offline
-    reinforcement learning with Behavior Cloning as a representative example
-    under `unplugged/` directory.
+2.  Data readers, offline training and evaluation scripts for fully [offline
+    reinforcement learning with Behavior Cloning](https://github.com/deepmind/alphastar/tree/main/alphastar/unplugged)
+    as a representative example.
 
 ## Setup
 
