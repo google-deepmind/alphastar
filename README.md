@@ -4,6 +4,19 @@
 [DeepMind](http://deepmind.com) that provides the tools to train an agent to
 master StarCraft II offered by [Blizzard Entertainment](http://blizzard.com).
 
+Regarding research efforts, there are two main milestones that can relate with
+this open source release. The first one, Paper published at Nature and Neurips 2019,
+presents an **online learning** - learning through interaction with an evironment- 
+type of scenario: however, there are concepts not covered in this release,
+such as the multi-agent league. 
+
+The second research effort, AlphaStar Unpluggued, focus in offline reinforcement
+learning -learning through data-. The results overpass the published Nature paper release. 
+It is based in a set of agents in the offline setting and offline setting with online learning.
+
+This release allows you to reproduce all the offline settings and sets the benchmark
+for the online setting. 
+
 As part of our open-sourcing efforts to drive more research interest around
 StarCraft II, we provide the following key offerings with this package:
 
